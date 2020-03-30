@@ -29,10 +29,10 @@
     @Service
     class TestService {
     
-	@Autowired private Publisher publisher;
+	    @Autowired private Publisher publisher;
 	
-	public void test() {
-	    publisher.publish("this is customer", PublishType.Customer);
-	}
-}
+        public void test() {
+            publisher.publish("this is customer", PublishType.Customer);
+        }
+    }
 
