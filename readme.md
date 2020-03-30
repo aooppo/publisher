@@ -1,5 +1,5 @@
-# install
-##### add dependencies into pom.xml
+# Install
+- add dependencies into pom.xml
 
         <dependency>
 			<groupId>com.trinitesolutions.plugin</groupId>
@@ -12,17 +12,18 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-##### add config into  		
 
-	<bean id="amqpConfig" class="com.trinitesolutions.plugin.publisher.AMQPConfig">
-		<property name="host" value="localhost"/>
-		<property name="port" value="5672"/>
-		<property name="username" value="root" />
-		<property name="password" value="123456"/>
-		<property name="virtualHost" value="/mytest" />
-		<property name="prefixQueue" value="events.test."/>
-		<property name="exchange" value="events.test"/>
-	</bean>
+- add config into app-context-core.xml file		
+
+        <bean id="amqpConfig" class="com.trinitesolutions.plugin.publisher.AMQPConfig">
+            <property name="host" value="localhost"/>
+            <property name="port" value="5672"/>
+            <property name="username" value="root" />
+            <property name="password" value="123456"/>
+            <property name="virtualHost" value="/mytest" />
+            <property name="prefixQueue" value="events.test."/>
+            <property name="exchange" value="events.test"/>
+        </bean>
 
 
 # Usage
