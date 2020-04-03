@@ -10,7 +10,7 @@ public enum PublishType {
         this.publish = publish;
     }
 
-    public boolean isPublish() {
+    public boolean canPublish() {
         return publish;
     }
 

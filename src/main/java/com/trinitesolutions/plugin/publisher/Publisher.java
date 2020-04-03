@@ -20,7 +20,7 @@ public class Publisher {
     }
 
     public void publish(String msg, PublishType type) {
-        if (type == null || type.isPublish()) {
+        if (type == null || !type.canPublish()) {
            throw new RuntimeException("Cannot publish " + msg);
         }
         Union union = unionMap.get(type);
