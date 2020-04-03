@@ -21,19 +21,33 @@
             <property name="username" value="root" />
             <property name="password" value="123456"/>
             <property name="virtualHost" value="/mytest" />
-            <property name="prefixQueue" value="events.test."/>
-            <property name="exchange" value="events.test"/>
+            <property name="prefixQueue" value="crm.api.test.queue"/>
+            <property name="prefixExchange" value="crm.api.test.exchange"/>
+            <property name="brokerUser" value="user"/> <!-- middleware username, must register, then input -->
         </bean>
 
 
 # Usage
-    @Service
-    class TestService {
     
-	    @Autowired private Publisher publisher;
-	
-        public void test() {
-            publisher.publish("this is customer", PublishType.Customer);
-        }
+ - implements interface **IMsg** in entity class
+ ```
+public interface IMsg {
+  String getPublishMsg();
+}
+```
+ - publish msg to broker
+```
+@Service
+class TestService {
+    
+    @Autowired 
+    private Publisher publisher;
+    public void addCustomer(Customer customer) {
+       publisher.publish(customer);
     }
 
+    public void test() {
+        publisher.publish("this is customer", PublishType.Customer);
+    }
+}
+```

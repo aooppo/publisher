@@ -6,8 +6,9 @@ public class AMQPConfig {
     private String username;
     private String password;
     private String virtualHost;
-    private String exchange;
+    private String prefixExchange;
     private String prefixQueue;
+    private String brokerUser;
 
     public String getHost() {
         return host;
@@ -49,12 +50,12 @@ public class AMQPConfig {
         this.virtualHost = virtualHost;
     }
 
-    public String getExchange() {
-        return exchange;
+    public String getPrefixExchange() {
+        return prefixExchange;
     }
 
-    public void setExchange(String exchange) {
-        this.exchange = exchange;
+    public void setPrefixExchange(String prefixExchange) {
+        this.prefixExchange = prefixExchange;
     }
 
     public String getPrefixQueue() {
@@ -63,5 +64,13 @@ public class AMQPConfig {
 
     public void setPrefixQueue(String prefixQueue) {
         this.prefixQueue = prefixQueue;
+    }
+
+    public String getBrokerUser() {
+        return brokerUser;
+    }
+
+    public void setBrokerUser(String brokerUser) {
+        this.brokerUser = brokerUser;
     }
 }

@@ -4,22 +4,32 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class Publisher {
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired(required = false)
     private AMQPConfig amqpConfig;
+    @Autowired
+    private Map<PublishType, Union> unionMap;
 
-    public void publish(String msg) {
-        rabbitTemplate.convertAndSend(amqpConfig.getExchange(), "", msg);
-    }
-
-    public void publish(String msg, String exchange, String routingKey) {
-        rabbitTemplate.convertAndSend(exchange, routingKey, msg);
+    public void publish(IMsg msg) {
+        this.publish(msg.getPublishMsg(), msg.getPublishType());
     }
 
     public void publish(String msg, PublishType type) {
-        rabbitTemplate.convertAndSend(amqpConfig.getExchange(), amqpConfig.getPrefixQueue() + type.name(), msg);
+        if (type == null || type.isPublish()) {
+           throw new RuntimeException("Cannot publish " + msg);
+        }
+        Union union = unionMap.get(type);
+        if (union == null) {
+            throw new RuntimeException("couldn't get exchange and queue for send : "+type.name());
+        }
+        rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), union.getRoutingKey(), msg, m -> {
+            m.getMessageProperties().getHeaders().put("user", amqpConfig.getBrokerUser());
+            return m;
+        });
     }
 }
