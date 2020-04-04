@@ -91,6 +91,9 @@ public class FactoryConfig {
         String prefixExchange = config.getPrefixExchange();
 
         for (PublishType type : PublishType.values()) {
+            if(!type.canPublish()) {
+                continue;
+            }
             String qn = prefixQueue + "." + type.name();
             String en = prefixExchange + "." + type.name();
             Queue q = QueueBuilder.durable(qn)
