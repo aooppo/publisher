@@ -9,6 +9,15 @@ public class AMQPConfig {
     private String prefixExchange;
     private String prefixQueue;
     private String brokerUser;
+    private long messageTTL;
+
+    public long getMessageTTL() {
+        return messageTTL;
+    }
+
+    public void setMessageTTL(long messageTTL) {
+        this.messageTTL = messageTTL;
+    }
 
     public String getHost() {
         return host;

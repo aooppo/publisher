@@ -39,7 +39,7 @@ public class FactoryConfig {
         TopicExchange exchange = (TopicExchange) ExchangeBuilder.topicExchange(config.getPrefixExchange() + DLX_EXCHANGE).durable(true).build();
 //        Map<String, Object> args = new HashMap<>();
 //        args.put("x-message-ttl", 20000);
-        Queue queue = QueueBuilder.durable(config.getPrefixQueue() + DLX_QUEUE).withArgument("x-message-ttl", 20000).build();
+        Queue queue = QueueBuilder.durable(config.getPrefixQueue() + DLX_QUEUE).withArgument("x-message-ttl", config.getMessageTTL()).build();
         ad.declareExchange(exchange);
         ad.declareQueue(queue);
         ad.declareBinding(BindingBuilder.bind(queue).to(exchange).with(config.getPrefixQueue() + ".dlx.#"));

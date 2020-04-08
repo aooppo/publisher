@@ -24,6 +24,7 @@
             <property name="prefixQueue" value="crm.api.test.queue"/>
             <property name="prefixExchange" value="crm.api.test.exchange"/>
             <property name="brokerUser" value="user"/> <!-- middleware username, must register, then input -->
+            <property name="messageTTL" value="20000"/>
         </bean>
 
 
