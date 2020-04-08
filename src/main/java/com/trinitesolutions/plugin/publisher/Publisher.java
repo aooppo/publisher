@@ -17,7 +17,9 @@ public class Publisher {
     private Map<PublishType, Union> unionMap;
 
     public void publish(IMsg msg) {
-        this.publish(msg.getPublishMsg(), msg.getPublishType(), new HashMap<>());
+        Map<String, Object> props = new HashMap<>();
+        props.put("isNew", true);
+        this.publish(msg.getPublishMsg(), msg.getPublishType(), props);
     }
 
     public void publish(IMsg msg, boolean isNew) {

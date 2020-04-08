@@ -1,8 +1,13 @@
 package com.trinitesolutions.plugin.publisher;
 
 public enum PublishType {
-    Customer, Item, Contacts, NULL(false);
+    Customer,
+    Item,
+    Contacts,
+    NULL(false);
+
     private boolean publish = true;
+
     PublishType() {
     }
 
