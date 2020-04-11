@@ -40,6 +40,13 @@ public interface IMsg {
 
  - use @Pub in entity class
  
+```java
+@Pub
+class Item {
+
+}
+``` 
+ 
  - publish msg to broker
 ``` java
 @Service
@@ -49,10 +56,6 @@ class TestService {
     private Publisher publisher;
     public void addCustomer(Customer customer) {
        publisher.publish(customer);
-    }
-
-    public void test() {
-        publisher.publish("this is customer", PublishType.Customer);
     }
 }
 ```
