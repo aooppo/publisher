@@ -1,5 +1,16 @@
 package com.trinitesolutions.plugin.publisher;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class AMQPConfig {
     private String host;
     private int port;
@@ -10,6 +21,56 @@ public class AMQPConfig {
     private String prefixQueue;
     private String brokerUser;
     private long messageTTL;
+    private String path;
+    private Map<String, Set<Class<?>>> types;
+    AMQPConfig() {
+        System.out.println("init AMQPConfig");
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Map<String, Set<Class<?>>> getTypes() {
+        return types;
+    }
+
+    @PostConstruct()
+    private void init() {
+        ClassPathScanningCandidateComponentProvider cp = new ClassPathScanningCandidateComponentProvider(false);
+        cp.addIncludeFilter(new AnnotationTypeFilter(Pub.class));
+
+        Set<BeanDefinition> bd = cp.findCandidateComponents(getPath());
+        ClassLoader loader = AMQPConfig.class.getClassLoader();
+
+        Map<String, Set<Class<?>>> types = new HashMap<>();
+        for(BeanDefinition b : bd) {
+            String beanName = b.getBeanClassName();
+            try {
+                Class<?> c = loader.loadClass(beanName);
+                Pub pub = c.getAnnotation(Pub.class);
+                String value = pub.value();
+                if (StringUtils.isEmpty(value)) {
+                    value = c.getSimpleName();
+                }
+                Set<Class<?>> set = types.get(value);
+                if (set == null) {
+                    set = new HashSet<>();
+                }
+                set.add(c);
+                types.put(value, set);
+            } catch (ClassNotFoundException e) {
+                System.out.println("not found class"+ beanName + " @ " + getPath());
+            }
+        }
+        System.out.println("Pub types@ "+ types);
+        this.types = types;
+    }
+
 
     public long getMessageTTL() {
         return messageTTL;

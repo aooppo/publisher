@@ -21,7 +21,9 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @EnableRabbit
 @Configuration
@@ -45,7 +47,7 @@ public class FactoryConfig {
         ad.declareBinding(BindingBuilder.bind(queue).to(exchange).with(config.getPrefixQueue() + ".dlx.#"));
 
         //normal incoming
-        Map<PublishType, Union> us = unionMap();
+        Map<String, Union> us = unionMap();
         us.values().forEach(u -> {
             ad.declareQueue(u.getQueue());
             ad.declareExchange(u.getTopicExchange());
@@ -85,20 +87,17 @@ public class FactoryConfig {
     }
 
     @Bean
-    public Map<PublishType, Union> unionMap() {
-        Map<PublishType, Union> map = new HashMap<>();
+    public Map<String, Union> unionMap() {
+        Map<String, Union> map = new HashMap<>();
         String prefixQueue = config.getPrefixQueue();
         String prefixExchange = config.getPrefixExchange();
-
-        for (PublishType type : PublishType.values()) {
-            if(!type.canPublish()) {
-                continue;
-            }
-            String qn = prefixQueue + "." + type.name();
-            String en = prefixExchange + "." + type.name();
+        Set<String> types = config.getTypes().keySet();
+        for (String type : types) {
+            String qn = prefixQueue + "." + type;
+            String en = prefixExchange + "." + type;
             Queue q = QueueBuilder.durable(qn)
                     .withArgument("x-dead-letter-exchange", prefixExchange + DLX_EXCHANGE)
-                    .withArgument("x-dead-letter-routing-key", prefixQueue + ".dlx." + type.name())
+                    .withArgument("x-dead-letter-routing-key", prefixQueue + ".dlx." + type)
                     .build();
             map.put(type, Union.build(new TopicExchange(en), q));
         }
