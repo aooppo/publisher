@@ -1,33 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.trinitesolutions.plugin</groupId>
-    <artifactId>trinite-biz-publisher</artifactId>
-    <version>1.0</version>
+    <groupId>cc.voox</groupId>
+    <artifactId>publisher</artifactId>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
-    <name>trinite-biz-publisher</name>
-    <description>Demo project for Spring Boot</description>
-
+    <url>https://github.com/aooppo/voox</url>
+    <description>AMQP publisher</description>
+    <licenses>
+        <license>
+            <name>Server Side Public License</name>
+            <url>https://www.mongodb.com/licensing/server-side-public-license</url>
+            <distribution>repo</distribution>
+            <comments>A not business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/aooppo/voox</url>
+        <connection>https://github.com/aooppo/voox.git</connection>
+    </scm>
     <properties>
-        <java.version>1.8</java.version>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+<!--        <maven.deploy.skip>true</maven.deploy.skip>-->
     </properties>
-
-
+    <developers>
+        <developer>
+            <name>tj</name>
+            <id>tj</id>
+            <email>i@voox.cc</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
+            <version>1.7.25</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-api.version}</version>
+            <version>1.7.25</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -52,21 +67,75 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>2.2.5.RELEASE</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
-    <build>
-    <plugins>
-        <!--compiler插件-->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.6.1</version>
-            <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-                <encoding>UTF-8</encoding>
-            </configuration>
-        </plugin>
-    </plugins>
-    </build>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
 </project>

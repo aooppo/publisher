@@ -1,4 +1,4 @@
-package com.trinitesolutions.plugin.publisher;
+package cc.voox.plugin.publisher;
 
 public interface IMsg {
     String getPublishMsg();
