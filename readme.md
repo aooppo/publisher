@@ -4,10 +4,10 @@
 <dependency>
     <groupId>cc.voox</groupId>
     <artifactId>publisher</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
-- add config into app-context-core.xml file		
+- add config into spring.xml file		
 ``` xml
 <bean id="amqpConfig" class="AMQPConfig">
     <property name="host" value="localhost"/>

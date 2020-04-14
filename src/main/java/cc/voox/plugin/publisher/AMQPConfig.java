@@ -2,6 +2,7 @@ package cc.voox.plugin.publisher;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.StringUtils;
 
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@ComponentScan("cc.voox.plugin.publisher")
 public class AMQPConfig {
     private String host;
     private int port;
@@ -23,7 +25,7 @@ public class AMQPConfig {
     private long messageTTL;
     private String path;
     private Map<String, Set<Class<?>>> types;
-    AMQPConfig() {
+    public AMQPConfig() {
         System.out.println("init AMQPConfig");
     }
 
