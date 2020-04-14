@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cc.voox</groupId>
     <artifactId>publisher</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
     <url>https://github.com/aooppo/voox</url>
     <description>AMQP publisher</description>
@@ -16,8 +16,8 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/aooppo/voox</url>
-        <connection>https://github.com/aooppo/voox.git</connection>
+        <url>https://github.com/aooppo/publisher</url>
+        <connection>https://github.com/aooppo/publisher.git</connection>
     </scm>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
