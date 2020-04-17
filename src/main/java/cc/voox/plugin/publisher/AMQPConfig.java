@@ -1,5 +1,8 @@
 package cc.voox.plugin.publisher;
 
+import cc.voox.plugin.publisher.callback.IConfirm;
+import cc.voox.plugin.publisher.callback.IResult;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,7 +15,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@ComponentScan("cc.voox.plugin.publisher")
 public class AMQPConfig {
     private String host;
     private int port;
@@ -25,6 +27,9 @@ public class AMQPConfig {
     private long messageTTL;
     private String path;
     private Map<String, Set<Class<?>>> types;
+    private IConfirm confirmCallback;
+    private IResult returnCallback;
+
     public AMQPConfig() {
         System.out.println("init AMQPConfig");
     }
@@ -144,5 +149,21 @@ public class AMQPConfig {
 
     public void setBrokerUser(String brokerUser) {
         this.brokerUser = brokerUser;
+    }
+
+    public IConfirm getConfirmCallback() {
+        return confirmCallback;
+    }
+
+    public void setConfirmCallback(IConfirm confirmCallback) {
+        this.confirmCallback = confirmCallback;
+    }
+
+    public IResult getReturnCallback() {
+        return returnCallback;
+    }
+
+    public void setReturnCallback(IResult returnCallback) {
+        this.returnCallback = returnCallback;
     }
 }

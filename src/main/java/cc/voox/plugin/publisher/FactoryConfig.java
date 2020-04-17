@@ -22,7 +22,7 @@ import java.util.Set;
 
 @EnableRabbit
 @Configuration
-public class FactoryConfig {
+public class FactoryConfig  {
     public final String DLX_EXCHANGE = ".dlx.exchange";
     public final String DLX_QUEUE = ".dlx.queue";
     @Autowired(required = false)
@@ -57,6 +57,8 @@ public class FactoryConfig {
         cf.setUsername(config.getUsername());
         cf.setPassword(config.getPassword());
         cf.setVirtualHost(config.getVirtualHost());
+        cf.setPublisherConfirms(true);
+        cf.setPublisherReturns(true);
         return cf;
     }
 
@@ -71,13 +73,9 @@ public class FactoryConfig {
     @Bean
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate rt = new RabbitTemplate(factory());
-        rt.setConfirmCallback((correlationData, ack, cause) -> {
-            if (!ack) {
-                System.out.println("HelloSender消息发送失败" + cause + correlationData.toString());
-            } else {
-                System.out.println("HelloSender 消息发送成功 ");
-            }
-        });
+        rt.setMandatory(true);
+        rt.setConfirmCallback(config.getConfirmCallback());
+        rt.setReturnCallback(config.getReturnCallback());
         return rt;
     }
 
