@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cc.voox</groupId>
     <artifactId>publisher</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
     <url>https://github.com/aooppo/publisher</url>
     <description>AMQP publisher</description>

@@ -41,7 +41,7 @@ public class Publisher {
     public void publish(IMsg msg, boolean ignoreCheck) {
         Map<String, Object> props = new HashMap<>();
         props.put("ignoreCheck", ignoreCheck);
-        this.publish(msg.getPublishMsg(), msg.getClass(), props, msg.getId());
+        this.publish(msg.getPublishMsg(), msg.getClass(), props, msg.getMsgId());
     }
 
 
