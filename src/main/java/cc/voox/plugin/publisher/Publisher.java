@@ -15,6 +15,8 @@ public class Publisher {
     private RabbitTemplate rabbitTemplate;
     private AMQPConfig amqpConfig;
     private Map<String, Union> unionMap;
+    @Autowired(required = false)
+    PublishAdvice publishAdvice;
 
     @Autowired
     private void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
@@ -89,6 +91,9 @@ public class Publisher {
         }
         String brokerUser = amqpConfig.getBrokerUser();
         try {
+            if(publishAdvice != null) {
+                publishAdvice.before(msg, type, props, id);
+            }
             rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), union.getRoutingKey(), msg, m -> {
                 m.getMessageProperties().getHeaders().put("user", brokerUser);
                 if(props != null) {
@@ -98,8 +103,13 @@ public class Publisher {
                 }
                 return m;
             }, new CorrelationData(type, brokerUser, id));
+
         }catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            if(publishAdvice != null) {
+                publishAdvice.post(msg, type, props, id);
+            }
         }
     }
 }
