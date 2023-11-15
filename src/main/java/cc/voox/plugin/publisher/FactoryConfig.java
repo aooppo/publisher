@@ -57,6 +57,7 @@ public class FactoryConfig  {
         cf.setUsername(config.getUsername());
         cf.setPassword(config.getPassword());
         cf.setVirtualHost(config.getVirtualHost());
+        
         cf.setPublisherConfirms(true);
         cf.setPublisherReturns(true);
         return cf;
@@ -94,6 +95,7 @@ public class FactoryConfig  {
                     .build();
             map.put(type, Union.build(new TopicExchange(en), q));
         }
+        config.setUnionMap(map);
         return map;
     }
 

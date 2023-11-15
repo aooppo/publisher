@@ -29,7 +29,7 @@ public class AMQPConfig {
     private Map<String, Set<Class<?>>> types;
     private IConfirm confirmCallback;
     private IResult returnCallback;
-
+    private Map<String, Union> unionMap;
     public AMQPConfig() {
         System.out.println("init AMQPConfig");
     }
@@ -45,7 +45,15 @@ public class AMQPConfig {
     public Map<String, Set<Class<?>>> getTypes() {
         return types;
     }
-
+    
+    public Map<String, Union> getUnionMap() {
+        return unionMap;
+    }
+    
+    public void setUnionMap(Map<String, Union> unionMap) {
+        this.unionMap = unionMap;
+    }
+    
     @PostConstruct()
     private void init() {
         ClassPathScanningCandidateComponentProvider cp = new ClassPathScanningCandidateComponentProvider(false);

@@ -2,6 +2,8 @@ package cc.voox.plugin.publisher;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -26,7 +28,8 @@ public class Publisher {
     private void setAmqpConfig(AMQPConfig amqpConfig) {
         this.amqpConfig = amqpConfig;
     }
-    @Autowired
+    
+    @Autowired(required = false)
     private void setUnionMap(Map<String, Union> unionMap) {
         this.unionMap = unionMap;
     }
@@ -56,11 +59,12 @@ public class Publisher {
     }
 
     private Union getUnionByType(Class<?> type) {
-        if (this.amqpConfig != null && this.unionMap != null) {
+        Map<String, Union> map = this.unionMap != null ? this.unionMap : this.amqpConfig.getUnionMap();
+        if (this.amqpConfig != null && map != null) {
             for(Map.Entry<String, Set<Class<?>>> entry: this.amqpConfig.getTypes().entrySet()) {
                 Set<Class<?>> set = entry.getValue();
                 if (set.contains(type)) {
-                    return this.unionMap.get(entry.getKey());
+                    return map.get(entry.getKey());
                 }
             }
         }
