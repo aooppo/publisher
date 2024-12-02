@@ -4,7 +4,7 @@
 <dependency>
     <groupId>cc.voox</groupId>
     <artifactId>publisher</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 - add config into spring.xml file	

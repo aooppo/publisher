@@ -2,12 +2,12 @@ package cc.voox.plugin.publisher;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.DependsOn;
+
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class Publisher {
     private RabbitTemplate rabbitTemplate;
     private AMQPConfig amqpConfig;
-    private Map<String, Union> unionMap;
+    private Map<String, List<Union>> unionMap;
     @Autowired(required = false)
     PublishAdvice publishAdvice;
 
@@ -30,7 +30,7 @@ public class Publisher {
     }
     
     @Autowired(required = false)
-    private void setUnionMap(Map<String, Union> unionMap) {
+    private void setUnionMap(Map<String, List<Union>> unionMap) {
         this.unionMap = unionMap;
     }
 
@@ -55,16 +55,19 @@ public class Publisher {
     }
 
     public Set<Class> getTypes() {
-        return amqpConfig.getTypes().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        return amqpConfig.getTypes().values().stream().map(TypeInfo::getClasses).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
-    private Union getUnionByType(Class<?> type) {
-        Map<String, Union> map = this.unionMap != null ? this.unionMap : this.amqpConfig.getUnionMap();
+    private List<Union> getUnionByType(Class<?> type) {
+        Map<String, List<Union>> map = this.unionMap != null ? this.unionMap : this.amqpConfig.getUnionMap();
         if (this.amqpConfig != null && map != null) {
-            for(Map.Entry<String, Set<Class<?>>> entry: this.amqpConfig.getTypes().entrySet()) {
-                Set<Class<?>> set = entry.getValue();
-                if (set.contains(type)) {
-                    return map.get(entry.getKey());
+            for(Map.Entry<String, TypeInfo> entry: this.amqpConfig.getTypes().entrySet()) {
+                TypeInfo typeInfo = entry.getValue();
+                if (typeInfo != null) {
+                    Set<Class<?>> set = typeInfo.getClasses();
+                    if (set.contains(type)) {
+                        return map.get(entry.getKey());
+                    }
                 }
             }
         }
@@ -75,39 +78,42 @@ public class Publisher {
         if (type == null || !getTypes().contains(type)) {
             return;
         }
-        Union union = getUnionByType(type);
-        if (union == null) {
+        List<Union> unions = getUnionByType(type);
+        if (unions == null) {
             throw new RuntimeException("couldn't get exchange and queue for send : "+type);
         }
-        rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), routingKey, msg, m -> {
-            m.getMessageProperties().getHeaders().put("user", amqpConfig.getBrokerUser());
-            return m;
-        });
+        for (Union union : unions) {
+            rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), routingKey, msg, m -> {
+                m.getMessageProperties().getHeaders().put("user", union.getBrokerUser());
+                return m;
+            });
+        }
+   
     }
 
     private void publish(String msg, Class<?> type, Map<String, Object> props, String id) {
         if (type == null || !getTypes().contains(type)) {
             return;
         }
-        Union union = getUnionByType(type);
-        if (union == null) {
+        List<Union> unions = getUnionByType(type);
+        if (unions == null) {
             throw new RuntimeException("couldn't get exchange and queue for send : "+type);
         }
-        String brokerUser = amqpConfig.getBrokerUser();
         try {
             if(publishAdvice != null) {
                 publishAdvice.before(msg, type, props, id);
             }
-            rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), union.getRoutingKey(), msg, m -> {
-                m.getMessageProperties().getHeaders().put("user", brokerUser);
-                if(props != null) {
-                    props.forEach((k,v)-> {
-                        m.getMessageProperties().getHeaders().put(k, v);
-                    });
-                }
-                return m;
-            }, new CorrelationData(type, brokerUser, id));
-
+            for (Union union : unions) {
+                rabbitTemplate.convertAndSend(union.getTopicExchange().getName(), union.getRoutingKey(), msg, m -> {
+                    m.getMessageProperties().getHeaders().put("user", union.getBrokerUser());
+                    if(props != null) {
+                        props.forEach((k,v)-> {
+                            m.getMessageProperties().getHeaders().put(k, v);
+                        });
+                    }
+                    return m;
+                }, new CorrelationData(type, union.getBrokerUser(), id));
+            }
         }catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         } finally {

@@ -11,5 +11,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Pub {
+    
     String value() default "";
+    
+    String[] excludeUsers() default {};
 }

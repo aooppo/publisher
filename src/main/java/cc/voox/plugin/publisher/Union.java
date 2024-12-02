@@ -7,13 +7,19 @@ public class Union {
     private TopicExchange topicExchange;
     private Queue queue;
     private String routingKey;
+    private String brokerUser;
 
-    private Union(TopicExchange topicExchange, Queue queue, String routingKey) {
+    private Union(TopicExchange topicExchange, Queue queue, String routingKey, String brokerUser) {
         this.topicExchange = topicExchange;
         this.queue = queue;
         this.routingKey = routingKey;
+        this.brokerUser = brokerUser;
     }
-
+    
+    public String getBrokerUser() {
+        return brokerUser;
+    }
+    
     public TopicExchange getTopicExchange() {
         return topicExchange;
     }
@@ -38,11 +44,11 @@ public class Union {
         this.routingKey = routingKey;
     }
 
-    protected static Union build(TopicExchange topicExchange, Queue queue) {
-        return new Union(topicExchange, queue, queue.getName());
+    protected static Union build(TopicExchange topicExchange, Queue queue, String brokerUser) {
+        return new Union(topicExchange, queue, queue.getName(), brokerUser);
     }
 
-    protected static Union build(TopicExchange topicExchange, Queue queue, String routingKey) {
-        return new Union(topicExchange, queue, routingKey);
+    protected static Union build(TopicExchange topicExchange, Queue queue, String routingKey, String brokerUser) {
+        return new Union(topicExchange, queue, routingKey, brokerUser);
     }
 }

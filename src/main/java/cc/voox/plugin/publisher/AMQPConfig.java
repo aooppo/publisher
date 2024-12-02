@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,14 +27,25 @@ public class AMQPConfig {
     private String brokerUser;
     private long messageTTL;
     private String path;
-    private Map<String, Set<Class<?>>> types;
+    private Map<String, TypeInfo> types;
     private IConfirm confirmCallback;
     private IResult returnCallback;
-    private Map<String, Union> unionMap;
+    private Map<String, List<Union>> unionMap;
+    private boolean showDebugInfo = false;
     public AMQPConfig() {
-        System.out.println("init AMQPConfig");
+        if (this.isShowDebugInfo()) {
+            System.out.println("init AMQPConfig");
+        }
     }
-
+    
+    public boolean isShowDebugInfo() {
+        return showDebugInfo;
+    }
+    
+    public void setShowDebugInfo(boolean showDebugInfo) {
+        this.showDebugInfo = showDebugInfo;
+    }
+    
     public String getPath() {
         return path;
     }
@@ -42,15 +54,15 @@ public class AMQPConfig {
         this.path = path;
     }
 
-    public Map<String, Set<Class<?>>> getTypes() {
+    public Map<String, TypeInfo> getTypes() {
         return types;
     }
     
-    public Map<String, Union> getUnionMap() {
+    public Map<String, List<Union>> getUnionMap() {
         return unionMap;
     }
     
-    public void setUnionMap(Map<String, Union> unionMap) {
+    public void setUnionMap(Map<String, List<Union>> unionMap) {
         this.unionMap = unionMap;
     }
     
@@ -62,7 +74,8 @@ public class AMQPConfig {
         Set<BeanDefinition> bd = cp.findCandidateComponents(getPath());
         ClassLoader loader = AMQPConfig.class.getClassLoader();
 
-        Map<String, Set<Class<?>>> types = new HashMap<>();
+//        Map<String, Set<Class<?>>> types = new HashMap<>();
+        Map<String, TypeInfo> types = new HashMap<>();
         for(BeanDefinition b : bd) {
             String beanName = b.getBeanClassName();
             try {
@@ -72,17 +85,26 @@ public class AMQPConfig {
                 if (StringUtils.isEmpty(value)) {
                     value = c.getSimpleName();
                 }
-                Set<Class<?>> set = types.get(value);
-                if (set == null) {
-                    set = new HashSet<>();
+                // 获取或创建 TypeInfo
+                TypeInfo typeInfo = types.get(value);
+                if (typeInfo == null) {
+                    typeInfo = new TypeInfo(pub, new HashSet<>());
                 }
-                set.add(c);
-                types.put(value, set);
+//                Set<Class<?>> set = types.get(value);
+//                if (set == null) {
+//                    set = new HashSet<>();
+//                }
+                // 添加类到 TypeInfo
+                typeInfo.getClasses().add(c);
+                // 更新 Map
+                types.put(value, typeInfo);
             } catch (ClassNotFoundException e) {
                 System.out.println("not found class"+ beanName + " @ " + getPath());
             }
         }
-        System.out.println("Pub types@ "+ types);
+        if (this.isShowDebugInfo()) {
+            System.out.println("Pub types@ " + types);
+        }
         this.types = types;
     }
 
